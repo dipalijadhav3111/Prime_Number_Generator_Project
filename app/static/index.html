@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prime Generator Engine & REST API Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0f1d;
+      --card-bg: rgba(16, 24, 48, 0.85);
+      --card-border: rgba(99, 102, 241, 0.2);
+      --accent-primary: #6366f1;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15), transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.12), transparent 40%);
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    h1 { font-family: 'Outfit', sans-serif; font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, #a5b4fc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.subtitle { color: var(--text-muted); margin-top: 0.5rem; font-size: 1.05rem; }
+    .api-links { margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; }
+    .btn-link { background: rgba(99, 102, 241, 0.15); border: 1px solid var(--card-border); color: #818cf8; padding: 0.4rem 1rem; border-radius: 999px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
+    .btn-link:hover { background: var(--accent-primary); color: #fff; }
+    
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .card-title { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: #e0e7ff; }
+    
+    label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.3rem; margin-top: 0.8rem; }
+    input, select { width: 100%; padding: 0.65rem 0.9rem; border-radius: 8px; border: 1px solid var(--card-border); background: #070b14; color: #fff; font-family: inherit; font-size: 0.95rem; outline: none; }
+    input:focus, select:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3); }
+    
+    .btn-submit { width: 100%; margin-top: 1.2rem; padding: 0.75rem; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: transform 0.15s, opacity 0.15s; }
+    .btn-submit:hover { opacity: 0.92; transform: translateY(-1px); }
+    
+    .result-box { margin-top: 1rem; padding: 0.85rem; border-radius: 8px; background: #050811; border: 1px solid rgba(255,255,255,0.06); font-family: 'Fira Code', monospace; font-size: 0.85rem; max-height: 220px; overflow-y: auto; color: #a5f3fc; }
+    .result-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .badge-success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge-info { background: rgba(6, 182, 212, 0.2); color: #22d3ee; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 0.8rem; font-size: 0.85rem; }
+    th, td { text-align: left; padding: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    th { color: var(--text-muted); font-weight: 600; }
+    .fastest { color: #34d399; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ Prime Generator Engine & REST API</h1>
+      <p class="subtitle">High-Performance Algorithmic Core • Strategy Pattern • Interactive Evaluation</p>
+      <div class="api-links">
+        <a href="/docs" target="_blank" class="btn-link">📖 Interactive Swagger /docs</a>
+        <a href="/redoc" target="_blank" class="btn-link">📘 ReDoc Specs</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- 1. Range Prime Generator -->
+      <div class="card">
+        <h2 class="card-title">🔢 Generate Primes in Range</h2>
+        <label for="rangeStart">Start Value:</label>
+        <input type="number" id="rangeStart" value="1" min="0">
+        
+        <label for="rangeEnd">End Value:</label>
+        <input type="number" id="rangeEnd" value="100" min="1">
+        
+        <label for="rangeAlgo">Algorithm Strategy:</label>
+        <select id="rangeAlgo">
+          <option value="segmented">Segmented Sieve (Fastest & Memory Optimal)</option>
+          <option value="sieve">Classic Sieve of Eratosthenes</option>
+          <option value="trial">Trial Division (6k ± 1)</option>
+          <option value="miller_rabin">Deterministic Miller-Rabin</option>
+        </select>
+        
+        <button class="btn-submit" onclick="generateRange()">⚡ Generate Primes</button>
+        <div class="result-box" id="rangeResult">// Click Generate to compute primes...</div>
+      </div>
+
+      <!-- 2. Single Number Primality Test -->
+      <div class="card">
+        <h2 class="card-title">🔍 Primality Verification</h2>
+        <label for="checkNum">Enter Number to Test:</label>
+        <input type="number" id="checkNum" value="1000000007" min="0">
+        
+        <label for="checkAlgo">Verification Engine:</label>
+        <select id="checkAlgo">
+          <option value="miller_rabin">Miller-Rabin Primality Test (O(k log³ N))</option>
+          <option value="trial">Optimized Trial Division (O(√N))</option>
+        </select>
+        
+        <button class="btn-submit" onclick="checkPrime()">🧪 Test Primality</button>
+        <div class="result-box" id="checkResult">// Enter number and click Test...</div>
+      </div>
+
+      <!-- 3. N-th Prime Finder -->
+      <div class="card">
+        <h2 class="card-title">🎯 Find N-th Prime</h2>
+        <label for="nthInput">Find the N-th Prime Number (e.g. 100):</label>
+        <input type="number" id="nthInput" value="100" min="1" max="1000000">
+        
+        <button class="btn-submit" onclick="findNth()">🚀 Compute N-th Prime</button>
+        <div class="result-box" id="nthResult">// Click Compute to find Nth prime...</div>
+      </div>
+    </div>
+
+    <!-- 4. Benchmarking Section -->
+    <div class="card" style="margin-bottom: 2rem;">
+      <h2 class="card-title">📊 Multi-Algorithm Benchmark Comparison</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Run all 4 algorithm strategies simultaneously on the specified range to analyze time complexity and execution speed.</p>
+      
+      <div style="display: flex; gap: 1rem; align-items: flex-end; margin-top: 1rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 140px;">
+          <label for="benchStart">Benchmark Start:</label>
+          <input type="number" id="benchStart" value="1">
+        </div>
+        <div style="flex: 1; min-width: 140px;">
+          <label for="benchEnd">Benchmark End:</label>
+          <input type="number" id="benchEnd" value="100000">
+        </div>
+        <div>
+          <button class="btn-submit" style="margin: 0; padding: 0.65rem 1.5rem;" onclick="runBenchmark()">⚡ Run Benchmark</button>
+        </div>
+      </div>
+      
+      <div id="benchmarkOutput" style="margin-top: 1rem;"></div>
+    </div>
+  </div>
+
+  <script>
+    async function generateRange() {
+      const start = parseInt(document.getElementById('rangeStart').value);
+      const end = parseInt(document.getElementById('rangeEnd').value);
+      const algo = document.getElementById('rangeAlgo').value;
+      const resBox = document.getElementById('rangeResult');
+      
+      resBox.innerHTML = 'Computing...';
+      try {
+        const res = await fetch('/api/primes/range', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ start, end, algorithm: algo })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Request failed');
+        
+        resBox.innerHTML = `
+          <div class="result-badge badge-success">✓ Found ${data.count} primes in ${data.execution_time_ms} ms</div>
+          <div style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 0.5rem;">Algorithm: ${data.algorithm_used}</div>
+          <div>[${data.primes.slice(0, 50).join(', ')}${data.primes.length > 50 ? ' ... and ' + (data.primes.length - 50) + ' more' : ''}]</div>
+        `;
+      } catch (err) {
+        resBox.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+      }
+    }
+
+    async function checkPrime() {
+      const num = parseInt(document.getElementById('checkNum').value);
+      const algo = document.getElementById('checkAlgo').value;
+      const resBox = document.getElementById('checkResult');
+      
+      resBox.innerHTML = 'Testing...';
+      try {
+        const res = await fetch('/api/primes/check', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ number: num, algorithm: algo })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Request failed');
+        
+        const isP = data.is_prime;
+        resBox.innerHTML = `
+          <div class="result-badge ${isP ? 'badge-success' : 'badge-info'}">
+            ${isP ? '🎉 ' + data.number + ' is PRIME!' : '❌ ' + data.number + ' is NOT prime'}
+          </div>
+          <div style="color: #94a3b8; font-size: 0.75rem;">Engine: ${data.algorithm_used}</div>
+          <div style="color: #94a3b8; font-size: 0.75rem;">Time: ${data.execution_time_ms} ms</div>
+        `;
+      } catch (err) {
+        resBox.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+      }
+    }
+
+    async function findNth() {
+      const n = parseInt(document.getElementById('nthInput').value);
+      const resBox = document.getElementById('nthResult');
+      
+      resBox.innerHTML = 'Finding N-th prime...';
+      try {
+        const res = await fetch('/api/primes/nth', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ n })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Request failed');
+        
+        resBox.innerHTML = `
+          <div class="result-badge badge-success">🎯 The ${data.n}th prime is ${data.nth_prime}</div>
+          <div style="color: #94a3b8; font-size: 0.75rem;">Computed in ${data.execution_time_ms} ms</div>
+        `;
+      } catch (err) {
+        resBox.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+      }
+    }
+
+    async function runBenchmark() {
+      const start = parseInt(document.getElementById('benchStart').value);
+      const end = parseInt(document.getElementById('benchEnd').value);
+      const out = document.getElementById('benchmarkOutput');
+      
+      out.innerHTML = '<p style="color: #a5b4fc;">Running benchmark across all algorithms...</p>';
+      try {
+        const res = await fetch('/api/benchmark', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ start, end })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Benchmark failed');
+        
+        let html = `
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Algorithm Name</th>
+                <th>Primes Count</th>
+                <th>Execution Time</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        
+        data.results.forEach((r, idx) => {
+          html += `
+            <tr class="${idx === 0 ? 'fastest' : ''}">
+              <td>${idx === 0 ? '🥇 #1' : '#' + (idx + 1)}</td>
+              <td>${r.algorithm_name}</td>
+              <td>${r.count.toLocaleString()}</td>
+              <td>${r.execution_time_ms} ms</td>
+            </tr>
+          `;
+        });
+        html += '</tbody></table>';
+        out.innerHTML = html;
+      } catch (err) {
+        out.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+      }
+    }
+  </script>
+</body>
+</html>
